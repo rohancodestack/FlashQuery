@@ -1,4 +1,4 @@
-
+// ✅ FlashQuery script.js with Mic and File Upload enabled
 const chatWindow = document.getElementById("chat-window");
 const inputField = document.getElementById("user-input");
 const historyList = document.querySelector(".history-list");
@@ -6,11 +6,54 @@ const headerContainer = document.getElementById("header-container");
 const inputRow = document.querySelector(".input-row");
 const subtitle = document.querySelector(".subtitle");
 const mainHeader = document.querySelector(".main-header");
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = " https://14ff3608eb16.ngrok-free.app"; // ✅ updated Ngrok backend URL
 
 let currentChatId = null;
 let chatHistory = JSON.parse(localStorage.getItem("flashquery_history")) || [];
 let pdfContext = "";
+
+// ✅ Microphone Handler
+const micButton = document.querySelector(".mic-btn");
+if (micButton) {
+  micButton.addEventListener("click", () => {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = "en-US";
+    recognition.start();
+    recognition.onresult = function (event) {
+      const transcript = event.results[0][0].transcript;
+      inputField.value = transcript;
+      handleSend();
+    };
+    recognition.onerror = function (event) {
+      console.error("Mic Error:", event.error);
+    };
+  });
+}
+
+// ✅ File Upload Handler (plus_icon)
+const fileInput = document.getElementById("fileInput");
+if (fileInput) {
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch(`${BASE_URL}/upload`, {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      pdfContext = data.content;
+      addMessage("ai", `✅ PDF uploaded and processed successfully.`);
+    } catch (err) {
+      console.error("File Upload Error:", err);
+      addMessage("ai", `❌ Failed to process the uploaded file.`);
+    }
+  });
+}
 
 // ⏎ Shift+Enter = newline | Enter = send
 inputField.addEventListener("keydown", function (e) {
@@ -181,7 +224,6 @@ function loadChat(chatId) {
   chatWindow.classList.add("show");
 }
 
-// ✅ Updated summarizeYouTube with dark red YouTube via CSS class
 function summarizeYouTube() {
   mainHeader.innerHTML = `Ready to summarize your <span class="youtube-red">YouTube</span> content?`;
   subtitle.innerText = "Summarize in a blink.";

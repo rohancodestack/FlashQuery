@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from langchain_groq import ChatGroq
 from Pipeline.rag_chain import rag_chain
 from PIL import Image
 import pytesseract

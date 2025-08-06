@@ -11,7 +11,7 @@ from langchain.utilities import SerpAPIWrapper
 # ✅ Load API keys
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY") or "your-serpapi-key"
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY") or "28b1c1ee7e7e3eecca33f2ea59694a5cc2745560c43e16917786c1bd58fac4da"
 
 # ✅ SerpAPI Search Tool
 search = SerpAPIWrapper(
@@ -79,7 +79,12 @@ class RAGChainWithContext:
         q = question.lower()
         return any(k in q for k in ["say on the phone", "how to say", "what's better", "is it okay to say", "polite way", "this is rohan", "how should i introduce"])
 
-    def clean_serp_output(self, raw: str, question: str = "") -> str:
+    def clean_serp_output(self, raw, question: str = "") -> str:
+        if isinstance(raw, list):
+            raw = " ".join([str(item) for item in raw])
+        elif not isinstance(raw, str):
+            raw = str(raw)
+
         raw = re.sub(r"[\[\]\"']", "", raw)
         sentences = re.split(r'(?<=[.?!])\s+|\n', raw)
         seen, filtered = set(), []
@@ -122,14 +127,13 @@ class RAGChainWithContext:
         if self.should_use_serpapi(question):
             try:
                 serp_result = search_tool.run(question)
-                if serp_result and len(serp_result.strip()) > 20:
+                if serp_result:
                     print("[🌐 Real-Time Web Search Triggered]")
                     print(f"[🔎 SerpAPI Result]: {serp_result}")
                     return self.clean_serp_output(serp_result, question)
             except Exception as e:
                 print(f"[❌ SerpAPI Fallback Error]: {str(e)}")
 
-        # ✅ Fallback to LLM
         print("[💬 Falling Back to LLM]")
         return self._invoke_chain(question)
 
