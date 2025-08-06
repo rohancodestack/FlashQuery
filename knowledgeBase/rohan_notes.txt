@@ -1,0 +1,89 @@
+Q1: What are the key challenges in medical PDF OCR?
+A1: Poor scan quality, inconsistent layouts, mixed data types, handwriting, and multilingual content cause OCR errors and require human intervention.
+
+Q2: Why is OCR critical in healthcare data extraction?
+A2: OCR automates extraction from scanned medical documents, reducing manual data entry time and improving clinical efficiency.
+
+Q3: What are the three types of medical PDFs?
+A3: (1) Standardized Lab Reports, (2) Semi-Structured Reports, and (3) Non-Latin/Multilingual Reports.
+
+Q4: How accurate is OCR for lab reports?
+A4: OCR accuracy in structured lab reports reaches up to 95–97% due to consistent formatting.
+
+Q5: What makes semi-structured reports harder to extract?
+A5: They contain mixed formats (text + numbers), inconsistent layouts, and unstructured narratives with embedded medical meaning.
+
+Q6: What preprocessing steps improve OCR accuracy?
+A6: Binarization, deskewing, noise reduction, and contrast enhancement improve scan quality for better OCR.
+
+Q7: How is OCR used in semi-structured documents?
+A7: OCR extracts text, followed by NLP (like NER models) to identify entities such as medications, values, and clinical notes.
+
+Q8: Why are multilingual documents difficult for OCR?
+A8: Non-Latin scripts require special models, and right-to-left languages need directional handling. Terminology translation adds complexity.
+
+Q9: What is confidence scoring in OCR?
+A9: OCR assigns a percentage to each recognized text element, indicating certainty. Low-confidence extractions are flagged for review.
+
+Q10: How does confidence thresholding work in clinical OCR?
+A10: Confidence >90% = auto-accept, 64–90% = partial review, <64% = manual review mandatory to ensure accuracy.
+
+Q11: How do LLMs help in OCR post-processing?
+A11: LLMs fix OCR errors, interpret abbreviations, and correct clinical language, improving data structure and reliability.
+
+Q12: What is an example of LLM error correction?
+A12: LLMs can correct "lnr" misread by OCR to "INR", based on clinical context.
+
+Q13: What role does JSON play in medical OCR?
+A13: JSON structures OCR output for integration with EHRs, preserving text location, font, and metadata.
+
+Q14: What are key advantages of structured output?
+A14: Searchability, integration readiness, audit trails, reduced coding effort, and clear data hierarchies.
+
+Q15: How are local medical terms mapped to standard vocabularies?
+A15: By contextual analysis and mapping to SNOMED CT or similar vocabularies using LLMs and NER models.
+
+Q16: Why is demographic context important in medical interpretation?
+A16: Reference ranges vary by age and gender. LLMs help detect values that seem normal but are abnormal for specific patients.
+
+Q17: How does HITL improve OCR system accuracy?
+A17: HITL validates flagged outputs, provides feedback, and ensures critical extractions are verified by clinical experts.
+
+Q18: What feedback interfaces improve OCR performance?
+A18: Thumbs up/down tools, editable fields, timestamps, correction logs, and user identification for audit tracking.
+
+Q19: How does the feedback loop work in OCR pipelines?
+A19: Feedback retrains models on edge cases, reducing future errors and improving performance with time.
+
+Q20: What makes Azure Computer Vision suitable for structured documents?
+A20: Azure Read API handles dense text, structured key-value pairs, and integrates well with Microsoft tools.
+
+Q21: When is Google Vision a better fit?
+A21: For multilingual documents and unstructured data, thanks to its broad language support and strong text detection.
+
+Q22: How is OCR integrated with health systems?
+A22: Through structured formats like JSON or HL7, which plug into EHRs and clinical dashboards.
+
+Q23: What are post-processing strategies in medical OCR?
+A23: Text normalization, contextual verification using LLMs, unit conversion, and result mapping to reference ranges.
+
+Q24: What does a typical OCR pipeline in healthcare include?
+A24: Document upload → Preprocessing → OCR → NLP → Confidence Scoring → HITL review → JSON output → EHR Integration.
+
+Q25: How does OCR handle handwritten text?
+A25: Handwriting recognition is still limited. AI-powered OCR improves accuracy but often requires specialized models or human review.
+
+Q26: What is the role of Named Entity Recognition (NER) in medical OCR?
+A26: NER identifies medical entities like test names, medications, or values from unstructured text, improving data usability.
+
+Q27: What accuracy can modern OCR + NLP achieve?
+A27: F1 scores typically range between 0.80 to 0.90, with top systems achieving over 0.90 in structured medical extractions.
+
+Q28: What metadata is preserved in structured OCR output?
+A28: Page number, line coordinates, font size, text orientation, and source location for audit and traceability.
+
+Q29: Why is full automation not feasible in healthcare OCR?
+A29: Due to potential clinical risks, edge cases, and legal accountability, human review is still essential for flagged data.
+
+Q30: How do AI systems ensure HIPAA compliance in OCR?
+A30: Through encryption (AES-256), audit logs, de-identification, access control, and compliance-first design architecture.

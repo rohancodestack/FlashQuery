@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlashQuery</title>
+  <link rel="icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .account-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      z-index: 10;
+    }
+
+    .account-dropdown {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: #1e293b;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .account-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .dropdown-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .account-menu {
+      margin-top: 8px;
+      background: #0f172a;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      padding: 10px;
+      display: none;
+      min-width: 200px;
+    }
+
+    .account-menu.show {
+      display: block;
+    }
+
+    .account-email {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+
+    .logout-btn, .signup-btn {
+      padding: 8px 12px;
+      width: 100%;
+      background: #38bdf8;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .main-header {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #38bdf8;
+      margin-bottom: 8px;
+      text-shadow: none;
+    }
+
+    .subtitle {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-bottom: 16px;
+      text-shadow: none;
+      opacity: 0;
+      animation: fadeInTagline 1.6s ease-out 0.6s forwards;
+    }
+
+    @keyframes fadeInTagline {
+      to {
+        opacity: 1;
+      }
+    }
+
+    #user-input {
+      font-size: 0.9rem;
+    }
+
+    .message.user, .message.ai {
+      font-size: 0.88rem;
+    }
+
+    .mode-dropdown {
+      position: relative;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: flex-start;
+      margin-top: 35px;
+    }
+
+    .mode-btn {
+      background: #1e293b;
+      color: #38bdf8;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .mode-options {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      background: #0f172a;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      flex-direction: column;
+      width: 220px;
+      z-index: 100;
+      margin-bottom: 8px;
+    }
+
+    .mode-options.show {
+      display: flex;
+    }
+
+    .mode-option {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mode-option img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .mode-option:hover {
+      background: #1e293b;
+    }
+
+    .btn-group button {
+      margin-top: 30px;
+    }
+
+    .mode-option img[alt="YouTube"] + span,
+    .upload-option img[alt="YouTube Icon"] + span,
+    .mode-option:has(img[alt="YouTube"]),
+    .upload-option:has(img[alt="YouTube Icon"]) {
+      color: darkred !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="overlay"></div>
+
+  <div class="sidebar">
+    <div class="logo">⚡ FlashQuery</div>
+    <div class="menu">
+      <h3>Previous Chats</h3>
+      <div class="history-list"></div>
+    </div>
+  </div>
+
+  <div class="account-container">
+    <div class="account-dropdown" onclick="toggleAccountDropdown()">
+      <img src="account_icon.png" alt="Account Icon" class="account-icon" />
+      <span class="account-name" id="accountName">Rohan Raj Aggarwal</span>
+    </div>
+    <div class="account-menu" id="accountMenu">
+      <div id="loggedInSection">
+        <p class="account-email">rohan@example.com</p>
+        <button class="logout-btn" onclick="logout()">Log out</button>
+      </div>
+      <div id="loggedOutSection" style="display: none;">
+        <button class="signup-btn" onclick="signupRedirect()">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-wrapper">
+    <div id="header-container">
+      <div class="logo-container">
+        <img src="flashquery_logo.png" alt="FlashQuery Logo" class="logo-img" />
+        <div class="logo-blur"></div>
+      </div>
+      <h1 class="main-header" id="mainHeader">Hi, I'm <span style="color:#38bdf8;">FlashQuery</span></h1>
+      <p class="subtitle" id="subtitle">Answers in a blink.</p>
+    </div>
+
+    <div class="input-row" id="inputRow">
+      <div class="mode-dropdown">
+        <div class="mode-options" id="modeOptions">
+          <div class="mode-option" onclick="summarizeYouTube()">
+            <img src="yt_icon.png" alt="YouTube" />
+            <span>Summarize YouTube Video</span>
+          </div>
+          <div class="mode-option" onclick="activateMathMode()">
+            <img src="math_mode.png" alt="Math" />
+            <span>Math Mode</span>
+          </div>
+          <div class="mode-option" onclick="activateDeepResearch()">
+            <img src="deep_research.png" alt="Research" />
+            <span>Deep Research Mode</span>
+          </div>
+        </div>
+        <button class="mode-btn" onclick="toggleModeMenu()">AI Modes</button>
+      </div>
+
+      <textarea id="user-input" placeholder="Ask me anything..."></textarea>
+
+      <div class="btn-group">
+        <div class="upload-dropdown">
+          <button class="tool-btn" onclick="toggleDropdown()">
+            <img src="plus_icon.png" alt="Upload" />
+          </button>
+          <div class="upload-options" id="uploadOptions">
+            <div class="upload-option" onclick="summarizeYouTube()">
+              <div class="upload-icon">
+                <img src="yt_icon.png" alt="YouTube Icon" style="width: 24px; height: 24px;" />
+              </div>
+              <span>Summarize YouTube video</span>
+            </div>
+            <div class="upload-option" onclick="document.getElementById('fileInput').click()">
+              <div class="upload-icon">
+                <img src="upload_icon.png" alt="Upload Icon" style="width: 24px; height: 24px;" />
+              </div>
+              <span>Upload files</span>
+            </div>
+            <div class="upload-option" onclick="activateMathMode()">
+              <div class="upload-icon">
+                <img src="math_mode.png" alt="Math Mode Icon" style="width: 24px; height: 24px;" />
+              </div>
+              <span>Math Mode</span>
+            </div>
+            <div class="upload-option" onclick="activateDeepResearch()">
+              <div class="upload-icon">
+                <img src="deep_research.png" alt="Research Icon" style="width: 24px; height: 24px;" />
+              </div>
+              <span>Deep Research Mode</span>
+            </div>
+          </div>
+        </div>
+        <button class="mic-btn">
+          <img src="mic_icon.png" />
+        </button>
+        <button class="send-btn" onclick="handleSend()">
+          <img src="send_bttn.png" />
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-window" id="chat-window"></div>
+    <input type="file" id="fileInput" style="display: none;" />
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function toggleModeMenu() {
+      document.getElementById("modeOptions").classList.toggle("show");
+    }
+
+    function toggleAccountDropdown() {
+      document.getElementById("accountMenu").classList.toggle("show");
+    }
+
+    function logout() {
+      alert("Logged out successfully");
+    }
+
+    function signupRedirect() {
+      window.location.href = "/signup";
+    }
+
+    function summarizeYouTube() {
+      document.getElementById("mainHeader").innerHTML =
+        'Ready to summarize your <span style="color:darkred;">YouTube</span> content?';
+      document.getElementById("subtitle").textContent = "Summarize in a blink.";
+    }
+
+    function activateMathMode() {
+      document.getElementById("mainHeader").innerHTML =
+        "Ready when you are — let's solve it.";
+      document.getElementById("subtitle").textContent = "Solve in a blink.";
+    }
+
+    function activateDeepResearch() {
+      document.getElementById("mainHeader").innerHTML =
+        "Let’s dig deeper — what are we exploring?";
+      document.getElementById("subtitle").textContent = "Connect dots in a blink.";
+    }
+  </script>
+</body>
+</html>
