@@ -10,3 +10,4 @@ PyMuPDF
 tavily-python
 langchain-groq
 langchain-tavily
+langchain-community

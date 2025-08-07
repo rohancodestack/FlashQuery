@@ -6,7 +6,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain.schema.runnable import RunnableMap
 from langchain.tools import Tool
-from langchain.utilities import SerpAPIWrapper
+from langchain_community.utilities import SerpAPIWrapper
+
 
 # ✅ Load API keys
 load_dotenv()
