@@ -6,7 +6,7 @@ const headerContainer = document.getElementById("header-container");
 const inputRow = document.querySelector(".input-row");
 const subtitle = document.querySelector(".subtitle");
 const mainHeader = document.querySelector(".main-header");
-const BASE_URL = " https://14ff3608eb16.ngrok-free.app"; // ✅ updated Ngrok backend URL
+const BASE_URL = "http://localhost:8000"; // ✅ Updated to  backend URL
 
 let currentChatId = null;
 let chatHistory = JSON.parse(localStorage.getItem("flashquery_history")) || [];
