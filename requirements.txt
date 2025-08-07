@@ -1,6 +1,12 @@
-openai
-langchain
 fastapi
 uvicorn
+openai
+langchain
 faiss-cpu
 python-dotenv
+pytesseract
+pillow
+PyMuPDF
+tavily-python
+langchain-groq
+langchain-tavily
