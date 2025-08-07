@@ -1,6 +1,7 @@
 import os
 import re
 from dotenv import load_dotenv
+
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.memory import ConversationBufferMemory
@@ -8,13 +9,12 @@ from langchain.schema.runnable import RunnableMap
 from langchain.tools import Tool
 from langchain_community.utilities import SerpAPIWrapper
 
-
-# ✅ Load API keys
+# ✅ Load .env variables
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY") or "28b1c1ee7e7e3eecca33f2ea59694a5cc2745560c43e16917786c1bd58fac4da"
+SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
 
-# ✅ SerpAPI Search Tool
+# ✅ Setup SerpAPI Wrapper
 search = SerpAPIWrapper(
     serpapi_api_key=SERPAPI_API_KEY,
     params={"num": 3, "hl": "en", "gl": "us", "timeout": 3}
@@ -31,20 +31,18 @@ class RAGChainWithContext:
         self.pdf_context = ""
         self.memory = ConversationBufferMemory(memory_key="history", return_messages=True)
 
-        # ✅ Intelligent LLM Prompt
+        # ✅ Chat Prompt Template
         self.prompt = ChatPromptTemplate.from_messages([
             (
                 "system",
                 "You're FlashQuery, a helpful AI assistant. Answer clearly and concisely. "
-                "If the question is a math word problem, solve it step-by-step algebraically and show all work. "
-                "If the question is about writing (emails, messages), keep it polite, helpful, and professional. "
-                "If there's PDF context or live data, use that carefully. Always prefer verified information. "
-                "If the user asks to 'teach', 'explain', 'how to', 'guide me', or requests steps/processes — "
-                "**ALWAYS provide a complete, well-structured multi-step answer**, using bullet points or numbered markdown (e.g., **Step 1**, *Step 2*, etc.)."
+                "If it's a math problem, solve step-by-step. If it's a writing question, keep it polite. "
+                "Use PDF context if provided. Use web data carefully. Provide structured steps if user asks how/why/guide."
             ),
             ("human", "{input}")
         ])
 
+        # ✅ Load LLM with Groq
         self.llm = ChatGroq(model="llama3-8b-8192", api_key=GROQ_API_KEY)
         self.chain = self.prompt | self.llm
 
@@ -78,7 +76,10 @@ class RAGChainWithContext:
 
     def is_grammar_or_intro_query(self, question: str) -> bool:
         q = question.lower()
-        return any(k in q for k in ["say on the phone", "how to say", "what's better", "is it okay to say", "polite way", "this is rohan", "how should i introduce"])
+        return any(k in q for k in [
+            "say on the phone", "how to say", "what's better", "is it okay to say",
+            "polite way", "this is rohan", "how should i introduce"
+        ])
 
     def clean_serp_output(self, raw, question: str = "") -> str:
         if isinstance(raw, list):
@@ -96,13 +97,11 @@ class RAGChainWithContext:
                 seen.add(clean)
                 filtered.append(clean)
 
-        # ✅ Combine steps if structured
         step_pattern = re.compile(r"^\s*\d+\.")
         steps = [s for s in filtered if step_pattern.match(s)]
         if len(steps) >= 3:
             return " ".join(steps[:5]).strip() + " ✅"
 
-        # ✅ Match sentence with question keywords
         question_keywords = re.findall(r"\b[a-zA-Z]{4,}\b", question.lower())
         for sentence in filtered:
             if any(qk in sentence.lower() for qk in question_keywords):
